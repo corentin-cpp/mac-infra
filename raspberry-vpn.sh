@@ -51,12 +51,11 @@ wget https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-
 sudo bash openvpn-install.sh
 
 # ------------------------------
-# Configuration du pare-feu (UFW)
+# Installation de Cockpit
 # ------------------------------
-echo " Configuration du pare-feu (UFW)..."
-sudo ufw enable
-sudo ufw allow 1194
-sudo ufw reload
+echo " Installation de OpenVPN"
+sudo apt-get install cockpit
+sudo systemctl enable cockpit.socket
 
 # ------------------------------
 # Verification des services
