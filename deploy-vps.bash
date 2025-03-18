@@ -24,30 +24,6 @@ while true; do
 done
 
 # ------------------------------
-# Configuration de Git avec Token PAT
-# ------------------------------
-read -p "Nom Git : " GIT_NAME
-read -p "Email Git : " GIT_EMAIL
-read -sp "Token GitHub (PAT) : " GIT_PAT
-
-sudo apt install -y git
-sudo -u $USERNAME git config --global user.name "$GIT_NAME"
-sudo -u $USERNAME git config --global user.email "$GIT_EMAIL"
-sudo -u $USERNAME git config --global credential.helper store
-
-# Creation du fichier de credentials securise
-cat <<EOF > /home/$USERNAME/.git-credentials
-https://$GIT_NAME:$GIT_PAT@github.com
-EOF
-chown $USERNAME:$USERNAME /home/$USERNAME/.git-credentials
-chmod 600 /home/$USERNAME/.git-credentials
-
-echo " Git configuré avec authentification PAT."
-
-# Nom de domaine pour Certbot
-read -p "Nom de domaine (pour Certbot) : " DOMAIN
-
-# ------------------------------
 # Creation de l'utilisateur avec sudo
 # ------------------------------
 echo " Creation de l'utilisateur $USERNAME..."
@@ -86,16 +62,6 @@ sudo pm2 save
 echo " Installation de Git..."
 sudo apt install -y git
 git --version
-
-echo " Configuration de Git..."
-sudo -u $USERNAME git config --global user.name "$GIT_NAME"
-sudo -u $USERNAME git config --global user.email "$GIT_EMAIL"
-sudo -u $USERNAME git config --global alias.st "status"
-sudo -u $USERNAME git config --global alias.co "checkout"
-sudo -u $USERNAME git config --global alias.br "branch"
-sudo -u $USERNAME git config --global alias.ci "commit"
-sudo -u $USERNAME git config --global core.editor "nano"
-echo " Git configure avec succes."
 
 # ------------------------------
 # Installation de Angular CLI
