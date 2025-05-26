@@ -1,0 +1,32 @@
+#cloud-config
+hostname: srv-client-access
+users:
+  - name: proxy
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh-authorized-keys:
+      - ssh-rsa AAAA... # Clé SSH admin
+
+packages:
+  - nginx
+  - ufw
+
+write_files:
+  - path: /etc/nginx/sites-available/projet-john
+    content: |
+      server {
+          listen 80;
+          server_name projet-john.macinfra.fr;
+
+          location / {
+              proxy_pass http://10.0.20.10:3000;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+          }
+      }
+
+runcmd:
+  - ln -s /etc/nginx/sites-available/projet-john /etc/nginx/sites-enabled/
+  - nginx -t && systemctl reload nginx
+  - ufw allow OpenSSH
+  - ufw allow 'Nginx Full'
+  - ufw --force enable

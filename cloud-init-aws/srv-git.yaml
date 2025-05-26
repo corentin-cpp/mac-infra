@@ -1,0 +1,20 @@
+#cloud-config
+hostname: srv-git
+users:
+  - name: git
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh-authorized-keys:
+      - ssh-rsa AAAA... # Clé SSH du développeur
+
+packages:
+  - git
+  - openssh-server
+  - ufw
+  - fail2ban
+
+runcmd:
+  - mkdir -p /home/git/repos
+  - chown git:git /home/git/repos
+  - ufw allow OpenSSH
+  - ufw --force enable

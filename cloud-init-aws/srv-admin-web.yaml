@@ -1,0 +1,48 @@
+#cloud-config
+hostname: srv-admin-web
+packages:
+  - cockpit
+  - cockpit-packagekit
+  - ldap-account-manager
+  - nginx
+  - realmd
+  - sssd
+  - adcli
+  - samba-common-bin
+  - oddjob
+  - oddjob-mkhomedir
+  - wget
+  - certbot
+  - python3-certbot-nginx
+
+runcmd:
+  # Activer cockpit
+  - systemctl enable --now cockpit.socket
+
+  # Configurer NGINX en reverse proxy vers Cockpit
+  - |
+    cat <<EOF > /etc/nginx/sites-available/admin
+    server {
+        listen 80;
+        server_name admin.macinfra.fr;
+
+        location / {
+            proxy_pass https://localhost:9090/;
+            proxy_ssl_verify off;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        }
+    }
+    EOF
+
+  - ln -s /etc/nginx/sites-available/admin /etc/nginx/sites-enabled/
+  - nginx -t && systemctl reload nginx
+
+  # Obtenir certificat SSL (Let's Encrypt)
+  - certbot --nginx -d admin.macinfra.fr --non-interactive --agree-tos -m admin@macinfra.fr
+
+  # UFW et sécurité de base
+  - ufw allow OpenSSH
+  - ufw allow 'Nginx Full'
+  - ufw --force enable

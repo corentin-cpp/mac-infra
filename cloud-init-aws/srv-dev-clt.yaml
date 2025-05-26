@@ -1,0 +1,23 @@
+#cloud-config
+hostname: srv-dev-john
+users:
+  - name: john
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh-authorized-keys:
+      - ssh-rsa AAAA... # Clé SSH du dev
+
+packages:
+  - nodejs
+  - npm
+  - git
+  - apache2
+  - php
+  - mariadb-client
+  - ufw
+
+runcmd:
+  - systemctl enable apache2
+  - systemctl start apache2
+  - ufw allow OpenSSH
+  - ufw allow "Apache Full"
+  - ufw --force enable

@@ -1,0 +1,19 @@
+#cloud-config
+hostname: srv-bdd
+users:
+  - name: dbadmin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh-authorized-keys:
+      - ssh-rsa AAAA... # Clé SSH d’admin
+
+packages:
+  - mariadb-server
+  - ufw
+
+runcmd:
+  - systemctl enable mariadb
+  - systemctl start mariadb
+  - mysql_secure_installation --use-default
+  - ufw allow OpenSSH
+  - ufw allow 3306
+  - ufw --force enable
